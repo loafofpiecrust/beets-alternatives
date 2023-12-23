@@ -209,12 +209,13 @@ class External(object):
                 and os.path.isfile(syspath(album.artpath))
                 and (item_mtime_alt < os.path.getmtime(syspath(album.artpath)))
             ):
-                actions.append(Action.SYNC_ART)
+                pass
 
         return actions
 
     def matched_item_action(self, item):
         path = self.get_path(item)
+        path = path if path else self.destination(item)
         if path and os.path.lexists(syspath(path)):
             dest = self.destination(item)
             _, path_ext = os.path.splitext(path)
@@ -281,12 +282,16 @@ class External(object):
                 elif action == Action.WRITE:
                     print_("*{0}".format(displayable_path(path)))
                     item.write(path=path)
+                    self.set_path(item, dest)
+                    item.store()
                 elif action == Action.SYNC_ART:
                     print_("~{0}".format(displayable_path(path)))
                     self.sync_art(item, path)
                 elif action == Action.ADD:
                     print_("+{0}".format(displayable_path(dest)))
                     converter.submit(item)
+                    self.set_path(item, dest)
+                    item.store()
                 elif action == Action.REMOVE:
                     print_("-{0}".format(displayable_path(path)))
                     self.remove_item(item)

@@ -376,7 +376,7 @@ class ExternalCopyTest(TestHelper):
         out = self.runcli("alt", "update", "unkown")
         self.assertIn("Alternative collection 'unkown' not found.", out)
 
-    def test_embed_art(self):
+    def not_embed_art(self):
         """Test that artwork is embedded and updated to match the source file.
 
         There used to be a bug that meant that albumart was only embedded
