@@ -268,7 +268,12 @@ class External(object):
             return
 
         converter = self.converter()
-        for item, actions in self.items_actions():
+        all_actions = self.items_actions()
+        counter = 0
+        for item, actions in all_actions:
+            counter += 1
+            if counter % 1000 == 0:
+                print_("--- Processed {0} items ---".format(counter))
             dest = self.destination(item)
             path = self.get_path(item)
             for action in actions:
@@ -288,16 +293,12 @@ class External(object):
                 elif action == Action.WRITE:
                     print_("*{0}".format(displayable_path(path)))
                     item.write(path=path)
-                    self.set_path(item, dest)
-                    item.store()
                 elif action == Action.SYNC_ART:
                     print_("~{0}".format(displayable_path(path)))
                     self.sync_art(item, path)
                 elif action == Action.ADD:
                     print_("+{0}".format(displayable_path(dest)))
                     converter.submit(item)
-                    self.set_path(item, dest)
-                    item.store()
                 elif action == Action.REMOVE:
                     print_("-{0}".format(displayable_path(path)))
                     self.remove_item(item)
