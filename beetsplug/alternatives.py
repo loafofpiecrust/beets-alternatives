@@ -201,15 +201,6 @@ class External(object):
 
         if item_mtime_alt < os.path.getmtime(syspath(item.path)):
             actions.append(Action.WRITE)
-        album = item.get_album()
-
-        if album:
-            if (
-                album.artpath
-                and os.path.isfile(syspath(album.artpath))
-                and (item_mtime_alt < os.path.getmtime(syspath(album.artpath)))
-            ):
-                pass
 
         return actions
 
@@ -217,13 +208,15 @@ class External(object):
         path = self.get_path(item)
         dest = self.destination(item)
         path_exists = path and os.path.lexists(syspath(path))
+        dest_exists = dest and os.path.lexists(syspath(dest))
         # If there's no path, but a destination file exists then set path to the destination.
-        if not path_exists and dest and os.path.lexists(syspath(dest)):
+        if not path_exists and dest_exists:
             path = dest
+            path_exists = dest_exists
             self.set_path(item, path)
             item.store()
 
-        if path and os.path.lexists(syspath(path)):
+        if path_exists:
             _, path_ext = os.path.splitext(path)
             _, dest_ext = os.path.splitext(dest)
             if not path_ext == dest_ext:
