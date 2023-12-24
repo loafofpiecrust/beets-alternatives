@@ -223,7 +223,7 @@ class External(object):
             self.set_path(item, path)
             item.store()
 
-        if path_exists:
+        if path and os.path.lexists(syspath(path)):
             _, path_ext = os.path.splitext(path)
             _, dest_ext = os.path.splitext(dest)
             if not path_ext == dest_ext:
