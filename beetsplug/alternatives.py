@@ -216,13 +216,14 @@ class External(object):
     def matched_item_action(self, item):
         path = self.get_path(item)
         dest = self.destination(item)
+        path_exists = path and os.path.lexists(syspath(path))
         # If there's no path, but a destination file exists then set path to the destination.
-        if not path and dest and os.path.lexists(syspath(dest)):
+        if not path_exists and dest and os.path.lexists(syspath(dest)):
             path = dest
             self.set_path(item, path)
             item.store()
 
-        if path and os.path.lexists(syspath(path)):
+        if path_exists:
             _, path_ext = os.path.splitext(path)
             _, dest_ext = os.path.splitext(dest)
             if not path_ext == dest_ext:
