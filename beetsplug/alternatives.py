@@ -210,7 +210,11 @@ class External(object):
         path_exists = path and os.path.lexists(syspath(path))
         dest_exists = dest and os.path.lexists(syspath(dest))
         # If there's no path, but a destination file exists then set path to the destination.
-        if not path_exists and dest_exists:
+        if (
+            not path_exists
+            and dest_exists
+            and abs(os.path.getsize(item.path) - os.path.getsize(dest)) < 2000
+        ):
             path = dest
             path_exists = dest_exists
             self.set_path(item, path)
@@ -267,10 +271,10 @@ class External(object):
             counter += 1
             if counter % 1000 == 0:
                 print_("--- Processed {0} items ---".format(counter))
-            dest = self.destination(item)
             path = self.get_path(item)
             for action in actions:
                 if action == Action.MOVE:
+                    dest = self.destination(item)
                     print_(
                         ">{0} -> {1}".format(
                             displayable_path(path), displayable_path(dest)
@@ -290,6 +294,7 @@ class External(object):
                     print_("~{0}".format(displayable_path(path)))
                     self.sync_art(item, path)
                 elif action == Action.ADD:
+                    dest = self.destination(item)
                     print_("+{0}".format(displayable_path(dest)))
                     converter.submit(item)
                 elif action == Action.REMOVE:
